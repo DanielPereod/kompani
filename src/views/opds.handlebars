@@ -1,22 +1,22 @@
-<?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom" xmlns:opds="http://opds-spec.org/2014/spec">
-  <id>uuid:</id>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:opds="http://opds-spec.org/2010/catalog">
+  <id>{{BaseURL}}</id>
   <title>OPDS Library</title>
-  <updated></updated>
+  <updated>{{CurrentTime}}</updated>
   <author>
     <name>OPDS Library Manager</name>
   </author>
+  <link rel="self" href="{{BaseURL}}/opds" type="application/atom+xml;profile=opds-catalog;kind=navigation" />
+  <link rel="start" href="{{BaseURL}}/opds" type="application/atom+xml;profile=opds-catalog;kind=navigation" />
 
   {{#each books}}
   <entry>
-    <title>{{this}}</title>
-    <id>urn:title:{{this}}</id>
-    <updated>{{../updatedDate}}</updated>
-    <author>
-      <name>Autor Desconocido</name>
-    </author>
-    <content type="text">Resumen de {{this}}</content>
-    <link rel="http://opds-spec.org/acquisition" href="/download/{{this}}.epub" type="application/epub+zip" />
+    <id>{{../BaseURL}}/books/{{this.Filename}}</id>
+    <title>{{this.Title}}</title>
+    <updated>{{this.LastUpdated}}</updated>
+    <link rel="http://opds-spec.org/acquisition" href="{{../BaseURL}}/books/{{this.Filename}}" type="{{this.MimeType}}"
+      length="{{this.Size}}" />
+    <link rel="http://opds-spec.org/image" href="{{../BaseURL}}/img/{{this.Filename}}" type="image/jpeg" />
+    <link rel="http://opds-spec.org/image/thumbnail" href="{{../BaseURL}}/img/{{this.Filename}}" type="image/jpeg" />
   </entry>
   {{/each}}
 </feed>

@@ -1,7 +1,7 @@
 import express from 'express';
 
 import { engine } from 'express-handlebars';
-import { findAllBooks, getCover } from './controllers/books';
+import { findAllBooks, getBook, getCover } from './controllers/books';
 import fs from "fs";
 import fileUpload from "express-fileupload";
 import { parseBookTitle } from './utils/parseBookTitle';
@@ -29,15 +29,35 @@ app.get('/', async (req, res) => {
 
 app.get('/opds', async (req, res) => {
   const books = await findAllBooks(req, res);
-  const epubBooks = books?.map(book => {
+  const baseURL = `${req.protocol}://${req.get('host')}`;
+  const currentTime = new Date().toISOString();
+
+  const epubBooksPromise = books?.map(async (book) => {
     if (book.includes(".epub")) {
-      return parseBookTitle(book);
+      const filePath = `${process.env.BOOKS_DIR}/${book}`;
+      try {
+        const stats = await fs.promises.stat(filePath);
+        return {
+          Filename: book,
+          Title: parseBookTitle(book),
+          LastUpdated: stats.mtime.toISOString(),
+          Size: stats.size,
+          MimeType: "application/epub+zip"
+        };
+      } catch (e) {
+        console.error(`Error with file ${book}:`, e);
+        return null;
+      }
     } else {
       return null;
     }
-  }).filter(book => book !== null);
+  });
+
+  const results = await Promise.all(epubBooksPromise || []);
+  const epubBooks = results.filter(book => book !== null);
+
   res.set('Content-Type', 'application/xml');
-  res.render('opds', { books: epubBooks, layout: false });
+  res.render('opds', { books: epubBooks, layout: false, BaseURL: baseURL, CurrentTime: currentTime });
 });
 
 app.get('/cover/:path', async (req, res) => {
@@ -45,20 +65,6 @@ app.get('/cover/:path', async (req, res) => {
   const imgSrc = `data:${cover?.mimeType};base64,${cover?.data.toString("base64")}`;
   return res.render("cover", { image: imgSrc })
 });
-
-app.get("/opdsv2", async (req, res) => {
-  //Render opds.xml
-  const books = await findAllBooks(req, res);
-  const epubBooks = books?.map(book => {
-    if (book.includes(".epub")) {
-      return parseBookTitle(book);
-    } else {
-      return null;
-    }
-  }).filter(book => book !== null);
-  res.set('Content-Type', 'application/xml');
-  res.render('opds', { books: epubBooks, layout: false });
-})
 
 app.get('/img/:path', async (req, res) => {
   try {
@@ -73,6 +79,11 @@ app.get('/img/:path', async (req, res) => {
     res.status(500).send();
   }
 
+});
+
+app.get('/books/:path', async (req, res) => {
+  const book = await getBook(`${process.env.BOOKS_DIR}/${req.params.path}`);
+  return res.send(book?.data)
 });
 
 app.post('/books/upload', async (req, res) => {
@@ -93,6 +104,7 @@ app.post('/books/upload', async (req, res) => {
     res.status(500).send();
   }
 });
+
 
 app.delete('/book/:path', async (req, res) => {
   try {

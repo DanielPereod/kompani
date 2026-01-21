@@ -2,14 +2,11 @@ version: '3.8'
 
 services:
   kompani:
-    # Build from the current directory
-    build: .
+    image: ghcr.io/danielpereod/kompani:master
     container_name: kompani
     ports:
       - "3000:3000"
     volumes:
-      # Map a local 'books' folder to the container's books directory
-      # You can change './books' to any absolute path on your host machine
       - ./books:/books
     environment:
       - BOOKS_DIR=/books

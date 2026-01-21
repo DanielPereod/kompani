@@ -19,6 +19,12 @@ export async function findAllBooks(req: Request, res: Response) {
   }
 };
 
+export async function getBook(filePath: string): Promise<{ data: Buffer; mimeType: string } | undefined> {
+  //Download the book
+  const book = await fs.promises.readFile(filePath);
+  const mimeType = "application/epub+zip";
+  return { data: book, mimeType };
+}
 
 export async function getEpubCover(filePath: string): Promise<{ data: Buffer; mimeType: string }> {
   const zip = new AdmZip(Buffer.from(filePath, 'utf8').toString('latin1'), { fs });
