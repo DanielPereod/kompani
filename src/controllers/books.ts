@@ -6,6 +6,7 @@ import AdmZip from "adm-zip";
 import path from "node:path";
 import fs from "node:fs";
 import { XMLParser } from "fast-xml-parser";
+import { encodeBookPath } from "../utils/parseBookTitle";
 
 
 //read all books
@@ -27,7 +28,7 @@ export async function getBook(filePath: string): Promise<{ data: Buffer; mimeTyp
 }
 
 export async function getEpubCover(filePath: string): Promise<{ data: Buffer; mimeType: string }> {
-  const zip = new AdmZip(Buffer.from(filePath, 'utf8').toString('latin1'), { fs });
+  const zip = new AdmZip(encodeBookPath(filePath), { fs });
   const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: "" });
 
   const containerEntry = zip.getEntry("META-INF/container.xml");

@@ -4,3 +4,10 @@ export function parseBookTitle(book: string) {
   }
   return book;
 }
+
+export function encodeBookPath(path: string) {
+  if (process.platform === "win32") {
+    return Buffer.from(path, 'utf-8').toString('latin1');
+  }
+  return path;
+}

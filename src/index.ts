@@ -39,6 +39,7 @@ app.get('/opds', async (req, res) => {
         const stats = await fs.promises.stat(filePath);
         return {
           Filename: book,
+          EncodedFilename: encodeURIComponent(book),
           Title: parseBookTitle(book).split(".epub")[0],
           LastUpdated: stats.mtime.toISOString(),
           Size: stats.size,
@@ -82,8 +83,15 @@ app.get('/img/:path', async (req, res) => {
 });
 
 app.get('/books/:path', async (req, res) => {
-  const book = await getBook(`${process.env.BOOKS_DIR}/${req.params.path}`);
-  return res.send(book?.data)
+  const filePath = `${process.env.BOOKS_DIR}/${req.params.path}`;
+  res.download(filePath, req.params.path, (err) => {
+    if (err) {
+      console.error("Error downloading file:", err);
+      if (!res.headersSent) {
+        res.status(404).send("File not found");
+      }
+    }
+  });
 });
 
 app.post('/books/upload', async (req, res) => {
