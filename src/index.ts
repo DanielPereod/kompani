@@ -39,7 +39,7 @@ app.get('/opds', async (req, res) => {
         const stats = await fs.promises.stat(filePath);
         return {
           Filename: book,
-          Title: parseBookTitle(book),
+          Title: parseBookTitle(book).split(".epub")[0],
           LastUpdated: stats.mtime.toISOString(),
           Size: stats.size,
           MimeType: "application/epub+zip"
