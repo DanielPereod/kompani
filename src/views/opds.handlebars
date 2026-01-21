@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:opds="http://opds-spec.org/2014/spec">
+  <id>uuid:</id>
+  <title>OPDS Library</title>
+  <updated></updated>
+  <author>
+    <name>OPDS Library Manager</name>
+  </author>
+
+  {{#each books}}
+  <entry>
+    <title>{{this}}</title>
+    <id>urn:title:{{this}}</id>
+    <updated>{{../updatedDate}}</updated>
+    <author>
+      <name>Autor Desconocido</name>
+    </author>
+    <content type="text">Resumen de {{this}}</content>
+    <link rel="http://opds-spec.org/acquisition" href="/download/{{this}}.epub" type="application/epub+zip" />
+  </entry>
+  {{/each}}
+</feed>

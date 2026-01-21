@@ -1,0 +1,28 @@
+{
+  "name": "kompani",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+
+  "scripts": {
+    "start": "bun --watch run src/index.ts"
+  },
+  "devDependencies": {
+    "@types/adm-zip": "^0.5.7",
+    "@types/bun": "latest",
+    "@types/express": "^5.0.6",
+    "@types/express-fileupload": "^1.5.1"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "adm-zip": "^0.5.16",
+    "exiftool-vendored": "^35.2.0",
+    "express": "^5.2.1",
+    "express-fileupload": "^1.5.2",
+    "express-handlebars": "^8.0.4",
+    "fast-xml-parser": "^5.3.3",
+    "handlebars": "^4.7.8"
+  }
+}
