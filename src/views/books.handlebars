@@ -1,40 +1,62 @@
-<div class="container">
-  <h1>Library</h1>
-  <form onsubmit="uploadBook(event)" enctype="multipart/form-data" class="upload-form">
-    <label class="file-upload-label">
-      <input type="file" name="file" accept="*" onchange="this.form.requestSubmit()">
-      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-        stroke-linejoin="round">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <h1 class="text-3xl font-bold tracking-tight text-white sm:text-4xl">Library</h1>
+  </div>
+
+  <form onsubmit="uploadBook(event)" enctype="multipart/form-data"
+    class="bg-zinc-900/50 border border-white/5 rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4 transition-all focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-500/30">
+    <label
+      class="group relative flex items-center justify-center gap-3 px-6 py-3 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 hover:text-indigo-300 rounded-xl cursor-pointer transition-all duration-200 border border-transparent hover:border-indigo-500/20 w-full sm:w-auto">
+      <input type="file" name="file" accept="*" onchange="this.form.requestSubmit()" class="sr-only">
+      <svg class="w-5 h-5 transition-transform group-hover:scale-110" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
         <polyline points="17 8 12 3 7 8"></polyline>
         <line x1="12" y1="3" x2="12" y2="15"></line>
       </svg>
-      <span>Upload New Book</span>
+      <span class="font-medium">Upload New Book</span>
     </label>
-    <div style="margin-left: auto; color: var(--text-secondary); font-size: 0.875rem;">
+    <div class="flex items-center gap-2 text-zinc-500 text-sm font-medium px-2">
+      <span class="w-2 h-2 rounded-full bg-emerald-500/50 animate-pulse"></span>
       Auto-upload enabled
     </div>
   </form>
 
-  <div class="books-grid">
+  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 pb-12">
     {{#each books}}
-    <div class="book-card">
-      <img class="book-cover" src="/img/{{this.bookFileName}}" alt="{{this.bookFileTitle}}" loading="lazy">
-      <div class="book-info">
-        <h2 class="book-title">{{this.bookFileTitle}}</h2>
-        <button class="delete-btn" onclick="deleteBook('{{this.bookFileName}}')">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="3 6 5 6 21 6"></polyline>
-            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-          </svg>
-          Delete
-        </button>
+    <div
+      class="group relative bg-zinc-900 border border-white/5 rounded-2xl overflow-hidden hover:border-indigo-500/30 hover:shadow-2xl hover:shadow-indigo-500/10 transition-all duration-300 hover:-translate-y-1">
+      <div class="aspect-[2/3] w-full bg-zinc-800 relative overflow-hidden">
+        <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          src="/img/{{this.bookFileName}}" alt="{{this.bookFileTitle}}" loading="lazy">
+        <div class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent opacity-60"></div>
+
+        <!-- Action Buttons Overlay -->
+        <div
+          class="absolute inset-0 flex items-end justify-center p-4 opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+          <button
+            class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 border border-red-500/20 rounded-xl backdrop-blur-md transition-all duration-200 text-sm font-medium"
+            onclick="deleteBook('{{this.bookFileName}}')">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+            Delete
+          </button>
+        </div>
+      </div>
+
+      <div class="p-4">
+        <h3 class="text-sm font-semibold text-zinc-100 line-clamp-2 leading-relaxed" title="{{this.bookFileTitle}}">
+          {{this.bookFileTitle}}
+        </h3>
       </div>
     </div>
     {{/each}}
   </div>
 </div>
+
 <script>
   function deleteBook(path) {
     fetch(`/book/${path}`, {
@@ -47,11 +69,28 @@
   function uploadBook(e) {
     e.preventDefault();
     const formData = new FormData(e.target);
+    const button = e.target.querySelector('label');
+    const originalContent = button.innerHTML;
+
+    // Loading state
+    button.innerHTML = `
+      <svg class="animate-spin h-5 w-5 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      Uploading...
+    `;
+    button.classList.add('cursor-wait', 'opacity-70');
+
     fetch('/books/upload', {
       method: 'POST',
       body: formData,
     }).then(() => {
       window.location.reload();
+    }).catch(() => {
+      button.innerHTML = originalContent;
+      button.classList.remove('cursor-wait', 'opacity-70');
+      alert('Upload failed');
     });
   }
 </script>
