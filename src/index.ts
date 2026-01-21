@@ -19,7 +19,10 @@ app.get('/', async (req, res) => {
   const books = await findAllBooks(req, res);
   const epubBooks = books?.map(book => {
     if (book.includes(".epub")) {
-      return parseBookTitle(book);
+      return {
+        bookFileName: book,
+        bookFileTitle: parseBookTitle(book).split(".epub")[0],
+      };
     } else {
       return null;
     }

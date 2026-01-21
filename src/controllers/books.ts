@@ -1,12 +1,9 @@
 import type { Request, Response } from "express";
 import { readdir } from "node:fs/promises";
-import { exiftool } from "exiftool-vendored";
-import type { Book } from "../models/Book";
 import AdmZip from "adm-zip";
 import path from "node:path";
 import fs from "node:fs";
 import { XMLParser } from "fast-xml-parser";
-import { encodeBookPath } from "../utils/parseBookTitle";
 
 
 //read all books
@@ -28,7 +25,7 @@ export async function getBook(filePath: string): Promise<{ data: Buffer; mimeTyp
 }
 
 export async function getEpubCover(filePath: string): Promise<{ data: Buffer; mimeType: string }> {
-  const zip = new AdmZip(encodeBookPath(filePath), { fs });
+  const zip = new AdmZip(filePath);
   const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: "" });
 
   const containerEntry = zip.getEntry("META-INF/container.xml");
